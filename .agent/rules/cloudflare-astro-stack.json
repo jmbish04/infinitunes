@@ -1,0 +1,15 @@
+{
+  "rule_id": "cf_astro_d1_enforcement",
+  "description": "Enforce Astro SSR with Cloudflare D1 and Shadcn UI standards.",
+  "conditions": [
+    "Whenever retrofitting or building Astro SSR applications on Cloudflare."
+  ],
+  "actions": [
+    "Ensure @astrojs/cloudflare adapter is used in 'server' mode.",
+    "Use Astro.locals.runtime.env to access Cloudflare bindings (like D1, R2).",
+    "Utilize <ViewTransitions /> combined with transition:persist for continuous media playback components.",
+    "Enforce strict dark theme variables in CSS.",
+    "Ensure Drizzle ORM utilizes drizzle-orm/d1.",
+    "Never output partial code; provide full, copy-pasteable files."
+  ]
+}
