@@ -1,0 +1,11 @@
+{
+  "rule_id": "hono_zod_openapi_standards",
+  "description": "Enforce strict documentation and typing standards for all Hono APIs.",
+  "conditions": ["Whenever a new API route is created using Hono."],
+  "actions": [
+    "Require the use of @hono/zod-openapi instead of standard Hono instances.",
+    "Mandate that every createRoute definition includes a unique operationId.",
+    "Enforce that all route validations use schemas derived directly from the database layer via drizzle-orm/zod.",
+    "Ensure both /swagger and /scalar documentation endpoints are exposed and functional."
+  ]
+}

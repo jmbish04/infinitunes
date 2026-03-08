@@ -1,0 +1,10 @@
+{
+  "rule_id": "cf_d1_drizzle_schema",
+  "description": "Standardize SQLite schema definitions for Cloudflare D1 using Drizzle ORM.",
+  "conditions": ["Whenever defining new database tables for Cloudflare D1."],
+  "actions": [
+    "Use crypto.randomUUID() for all primary key text IDs to avoid sequence locking and improve edge performance.",
+    "Always use 'integer' with { mode: 'timestamp' } for date columns and default to sql`(strftime('%s', 'now'))` for SQLite compatibility.",
+    "Store complex unstructured AI outputs (like hiring committee notes) as JSON fields."
+  ]
+}

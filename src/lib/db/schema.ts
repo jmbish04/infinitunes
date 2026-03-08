@@ -1,110 +1,61 @@
-import {
-  integer,
-  pgTable,
-  primaryKey,
-  text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+import { sql } from "drizzle-orm";
+import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
-import type { AdapterAccount } from "next-auth/adapters";
-
-import { createTable } from "./table-creator";
-
-/* -----------------------------------------------------------------------------------------------
- * Auth tables
- * NOTE: auth tables are common to mutiple projects, remember to remove `table filters` before
- * performing any operations
- * -----------------------------------------------------------------------------------------------*/
-
-export const users = pgTable("user", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: text("name"),
-  email: text("email").notNull().unique(),
-  username: text("username").unique(),
-  password: text("password"),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
-  image: text("image"),
-});
-
-export const accounts = pgTable(
-  "account",
-  {
-    userId: uuid("userId")
-      .notNull()
-      .references(() => users.id, { onDelete: "cascade" }),
-    type: text("type").$type<AdapterAccount["type"]>().notNull(),
-    provider: text("provider").notNull(),
-    providerAccountId: text("providerAccountId").notNull(),
-    refresh_token: text("refresh_token"),
-    access_token: text("access_token"),
-    expires_at: integer("expires_at"),
-    token_type: text("token_type"),
-    scope: text("scope"),
-    id_token: text("id_token"),
-    session_state: text("session_state"),
-  },
-  (account) => ({
-    compoundKey: primaryKey({
-      columns: [account.provider, account.providerAccountId],
-    }),
-  })
-);
-
-export const verificationTokens = pgTable(
-  "verificationToken",
-  {
-    identifier: text("identifier").notNull(),
-    token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
-  },
-  (vt) => ({
-    compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
-  })
-);
-
-/* -----------------------------------------------------------------------------------------------
- * App tables
- * -----------------------------------------------------------------------------------------------*/
-
-export const myPlaylists = createTable("playlist", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  name: text("name").notNull(),
-  description: text("description"),
-  userId: uuid("userId")
-    .references(() => users.id, { onDelete: "cascade" })
+// Define the target roles you are applying to
+export const jobs = sqliteTable("jobs", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: text("title").notNull(),
+  company: text("company").notNull(),
+  description: text("description").notNull(),
+  url: text("url"),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  songs: text("songs").array().default("{}").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
 });
 
-export const favorites = createTable("favorite", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("userId")
-    .references(() => users.id, { onDelete: "cascade" })
+// Define the specific resume versions used for the applications
+export const resumes = sqliteTable("resumes", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  title: text("title").notNull(), // e.g., "Frontend AI Engineer - 2026"
+  content: text("content").notNull(), // Full markdown or text of the resume
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
     .notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  songs: text("songs").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  albums: text("albums").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  playlists: text("playlists").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  artists: text("artists").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  podcasts: text("podcasts").array().unique().default("{}").notNull(),
 });
 
-/* -----------------------------------------------------------------------------------------------
- * Types
- * -----------------------------------------------------------------------------------------------*/
+// Define the generated CrewAI Hiring Committee podcast episodes
+export const episodes = sqliteTable("episodes", {
+  id: text("id")
+    .primaryKey()
+    .$defaultFn(() => crypto.randomUUID()),
+  jobId: text("job_id")
+    .references(() => jobs.id, { onDelete: "cascade" })
+    .notNull(),
+  resumeId: text("resume_id").references(() => resumes.id, {
+    onDelete: "set null",
+  }),
+  title: text("title").notNull(), // e.g., "Hiring Committee: OpenAI - UI Engineer"
+  audioStorageKey: text("audio_storage_key"), // The exact Cloudflare R2 object key
+  transcript: text("transcript"), // The raw text transcript of the podcast
+  analysis: text("analysis", { mode: "json" }), // Structured JSON of the committee's pros/cons/red flags
+  status: text("status", { enum: ["processing", "completed", "failed"] })
+    .default("processing")
+    .notNull(),
+  createdAt: integer("created_at", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
+    .notNull(),
+});
 
-export type User = typeof users.$inferSelect;
-export type NewUser = typeof users.$inferInsert;
+export const insertJobSchema = createInsertSchema(jobs);
+export const selectJobSchema = createSelectSchema(jobs);
 
-export type MyPlaylist = typeof myPlaylists.$inferSelect;
-export type NewPlaylist = typeof myPlaylists.$inferInsert;
+export const insertResumeSchema = createInsertSchema(resumes);
+export const selectResumeSchema = createSelectSchema(resumes);
 
-export type Favorite = typeof favorites.$inferSelect;
-export type NewFavorite = typeof favorites.$inferInsert;
+export const insertEpisodeSchema = createInsertSchema(episodes);
+export const selectEpisodeSchema = createSelectSchema(episodes);
