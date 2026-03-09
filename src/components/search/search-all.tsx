@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 
 import type { AllSearch } from "@/types";
 
@@ -28,19 +28,19 @@ export function SearchAll({ query, data }: SearchAllProps) {
                 </p>
 
                 {key !== "top_query" && (
-                  <Link
+                  <a
                     href={`/search/${key.slice(0, -1)}/${query}`}
                     className="ml-auto rounded-full border px-2 py-1 text-xs text-muted-foreground hover:bg-secondary hover:text-secondary-foreground"
                   >
                     View all
-                  </Link>
+                  </a>
                 )}
               </div>
 
               <Separator className="my-2" />
 
               {value.data.map((t) => (
-                <Link
+                <a
                   key={t.id}
                   href={getHref(t.url, t.type)}
                   className="flex gap-2 rounded-md p-2 hover:bg-secondary"
@@ -68,7 +68,7 @@ export function SearchAll({ query, data }: SearchAllProps) {
                       {t.subtitle}
                     </div>
                   </div>
-                </Link>
+                </a>
               ))}
             </div>
           );

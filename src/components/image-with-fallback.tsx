@@ -1,14 +1,14 @@
 "use client";
 
 import React from "react";
-import Image from "next/image";
 
-import type { ImageProps } from "next/image";
+
+
 
 import { cn } from "@/lib/utils";
 
-type ImageWithFallbackProps = ImageProps & {
-  fallback: ImageProps["src"];
+type ImageWithFallbackProps = any & {
+  fallback: any["src"];
 };
 
 export function ImageWithFallback(props: ImageWithFallbackProps) {
@@ -24,7 +24,7 @@ export function ImageWithFallback(props: ImageWithFallbackProps) {
   }, [src]);
 
   return (
-    <Image
+    <img
       src={error ? fallback : src}
       alt={alt}
       onError={setError}

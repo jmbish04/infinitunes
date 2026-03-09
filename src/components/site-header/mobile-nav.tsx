@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+
+
 import { Cog, Compass, Home, Search, User2 } from "lucide-react";
 
-import type { User } from "next-auth";
+type User = any;
 
 import { cn } from "@/lib/utils";
 
@@ -21,7 +21,7 @@ const mobileNavItems = [
 ];
 
 export function MobileNav({ user }: Props) {
-  const pathname = usePathname();
+  const pathname = "";
 
   const filteredNavItems = mobileNavItems.filter(({ label }) =>
     user ? label !== "Login" : label !== "Settings"
@@ -33,7 +33,7 @@ export function MobileNav({ user }: Props) {
         const isActive = href === pathname;
 
         return (
-          <Link
+          <a
             key={label}
             href={href}
             className={cn(
@@ -46,7 +46,7 @@ export function MobileNav({ user }: Props) {
             <span className="text-xs font-semibold duration-200 animate-in slide-in-from-bottom-1/2">
               {label}
             </span>
-          </Link>
+          </a>
         );
       })}
     </nav>

@@ -1,4 +1,4 @@
-import Link from "next/link";
+
 
 import type { Lang } from "@/types";
 
@@ -14,7 +14,7 @@ export function LanguageBar({ language }: LanguageBarProps) {
     <ScrollArea className="border-b py-2">
       <ul className="flex space-x-2 py-1 sm:space-x-6 md:space-x-10 lg:space-x-12">
         <li>
-          <Link title="For You" href="?">
+          <a title="For You" href="?">
             <Badge
               className={cn(
                 "bg-primary p-2 hover:shadow lg:px-4",
@@ -23,12 +23,12 @@ export function LanguageBar({ language }: LanguageBarProps) {
             >
               For&nbsp;you
             </Badge>
-          </Link>
+          </a>
         </li>
 
         {languages.map((lang) => (
           <li key={lang}>
-            <Link title={lang} href={`?lang=${lang.toLowerCase()}`}>
+            <a title={lang} href={`?lang=${lang.toLowerCase()}`}>
               <Badge
                 className={cn(
                   "bg-primary-foreground p-2 text-primary hover:bg-muted hover:shadow-sm lg:px-4",
@@ -38,7 +38,7 @@ export function LanguageBar({ language }: LanguageBarProps) {
               >
                 {lang}
               </Badge>
-            </Link>
+            </a>
           </li>
         ))}
       </ul>
