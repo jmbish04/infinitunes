@@ -32,9 +32,7 @@ export function LanguagePicker({ initialLanguages }: LanguagePickerProps) {
     React.useState(initialLanguages);
 
   function updateLanguages() {
-    setCookie("language", selectedLanguages.join(","), {
-      path: "/",
-    });
+    setCookie("language", selectedLanguages.join(","));
 
     toast.success("Preferences updated!", {
       description: "Your language preferences have been updated.",
