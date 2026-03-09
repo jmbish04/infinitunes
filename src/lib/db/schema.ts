@@ -1,11 +1,9 @@
 import {
   integer,
-  pgTable,
+  sqliteTable,
   primaryKey,
   text,
-  timestamp,
-  uuid,
-} from "drizzle-orm/pg-core";
+} from "drizzle-orm/sqlite-core";
 
 import type { AdapterAccount } from "next-auth/adapters";
 
@@ -17,20 +15,20 @@ import { createTable } from "./table-creator";
  * performing any operations
  * -----------------------------------------------------------------------------------------------*/
 
-export const users = pgTable("user", {
-  id: uuid("id").defaultRandom().primaryKey(),
+export const users = sqliteTable("user", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name"),
   email: text("email").notNull().unique(),
   username: text("username").unique(),
   password: text("password"),
-  emailVerified: timestamp("emailVerified", { mode: "date" }),
+  emailVerified: integer("emailVerified", { mode: "timestamp" }),
   image: text("image"),
 });
 
-export const accounts = pgTable(
+export const accounts = sqliteTable(
   "account",
   {
-    userId: uuid("userId")
+    userId: integer("userId")
       .notNull()
       .references(() => users.id, { onDelete: "cascade" }),
     type: text("type").$type<AdapterAccount["type"]>().notNull(),
@@ -51,12 +49,12 @@ export const accounts = pgTable(
   })
 );
 
-export const verificationTokens = pgTable(
+export const verificationTokens = sqliteTable(
   "verificationToken",
   {
     identifier: text("identifier").notNull(),
     token: text("token").notNull(),
-    expires: timestamp("expires", { mode: "date" }).notNull(),
+    expires: integer("expires", { mode: "timestamp" }).notNull(),
   },
   (vt) => ({
     compoundKey: primaryKey({ columns: [vt.identifier, vt.token] }),
@@ -68,32 +66,26 @@ export const verificationTokens = pgTable(
  * -----------------------------------------------------------------------------------------------*/
 
 export const myPlaylists = createTable("playlist", {
-  id: uuid("id").defaultRandom().primaryKey(),
+  id: integer("id").primaryKey({ autoIncrement: true }),
   name: text("name").notNull(),
   description: text("description"),
-  userId: uuid("userId")
+  userId: integer("userId")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  songs: text("songs").array().default("{}").notNull(),
-  createdAt: timestamp("createdAt", { mode: "date" }).defaultNow().notNull(),
+  songs: text("songs", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp" }).$defaultFn(() => new Date()).notNull(),
 });
 
 export const favorites = createTable("favorite", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  userId: uuid("userId")
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: integer("userId")
     .references(() => users.id, { onDelete: "cascade" })
     .notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  songs: text("songs").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  albums: text("albums").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  playlists: text("playlists").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  artists: text("artists").array().unique().default("{}").notNull(),
-  // @ts-expect-error string is not assignable to type 'string[]'
-  podcasts: text("podcasts").array().unique().default("{}").notNull(),
+  songs: text("songs", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  albums: text("albums", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  playlists: text("playlists", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  artists: text("artists", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  podcasts: text("podcasts", { mode: "json" }).$type<string[]>().default([]).notNull(),
 });
 
 /* -----------------------------------------------------------------------------------------------

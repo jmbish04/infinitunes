@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidateTag, unstable_cache } from "next/cache";
-import { eq, sql } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 
 import { db } from ".";
 import { favorites, myPlaylists } from "./schema";
@@ -9,7 +9,7 @@ import { favorites, myPlaylists } from "./schema";
 export const getUserPlaylists = unstable_cache(
   async (userId: string) => {
     const playlists = await db.query.myPlaylists.findMany({
-      where: (playlist, { eq }) => eq(playlist.userId, userId),
+      where: (playlist, { eq }) => eq(playlist.userId, Number(userId)),
     });
 
     return playlists;
@@ -20,7 +20,7 @@ export const getUserPlaylists = unstable_cache(
 
 export async function getPlaylistDetails(playlistId: string) {
   const playlist = await db.query.myPlaylists.findFirst({
-    where: (playlist, { eq }) => eq(playlist.id, playlistId),
+    where: (playlist, { eq }) => eq(playlist.id, Number(playlistId)),
   });
 
   return playlist;
@@ -38,7 +38,7 @@ export async function addSongsToPlaylist(playlistId: string, songs: string[]) {
   const [updatedPlaylist] = await db
     .update(myPlaylists)
     .set({ songs: dedupSongs })
-    .where(eq(myPlaylists.id, playlistId))
+    .where(eq(myPlaylists.id, Number(playlistId)))
     .returning();
 
   revalidateTag("user_playlists");
@@ -49,7 +49,7 @@ export async function addSongsToPlaylist(playlistId: string, songs: string[]) {
 export const getUserFavorites = unstable_cache(
   async (userId: string) => {
     const favorites = await db.query.favorites.findFirst({
-      where: (favorites, { eq }) => eq(favorites.userId, userId),
+      where: (favorites, { eq }) => eq(favorites.userId, Number(userId)),
     });
 
     return favorites;
@@ -69,7 +69,7 @@ export async function addToFavorites(
     const newFavorites = await db
       .insert(favorites)
       .values({
-        userId,
+        userId: Number(userId),
         songs: type === "song" ? [token] : [],
         albums: type === "album" ? [token] : [],
         playlists: type === "playlist" ? [token] : [],
@@ -90,19 +90,13 @@ export async function addToFavorites(
   const updatedfavorites = await db
     .update(favorites)
     .set({
-      songs: type === "song" ? sql`array_append(songs, ${token})` : undefined,
-      albums:
-        type === "album" ? sql`array_append(albums, ${token})` : undefined,
-      playlists:
-        type === "playlist" ?
-          sql`array_append(playlists, ${token})`
-        : undefined,
-      artists:
-        type === "artist" ? sql`array_append(artists, ${token})` : undefined,
-      podcasts:
-        type === "show" ? sql`array_append(podcasts, ${token})` : undefined,
+      songs: type === "song" ? [...userFavorites.songs, token] : undefined,
+      albums: type === "album" ? [...userFavorites.albums, token] : undefined,
+      playlists: type === "playlist" ? [...userFavorites.playlists, token] : undefined,
+      artists: type === "artist" ? [...userFavorites.artists, token] : undefined,
+      podcasts: type === "show" ? [...userFavorites.podcasts, token] : undefined,
     })
-    .where(eq(favorites.userId, userId))
+    .where(eq(favorites.userId, Number(userId)))
     .returning();
 
   if (!updatedfavorites) {
@@ -128,19 +122,13 @@ export async function removeFromFavorites(
   const updatedfavorites = await db
     .update(favorites)
     .set({
-      songs: type === "song" ? sql`array_remove(songs, ${token})` : undefined,
-      albums:
-        type === "album" ? sql`array_remove(albums, ${token})` : undefined,
-      playlists:
-        type === "playlist" ?
-          sql`array_remove(playlists, ${token})`
-        : undefined,
-      artists:
-        type === "artist" ? sql`array_remove(artists, ${token})` : undefined,
-      podcasts:
-        type === "show" ? sql`array_remove(podcasts, ${token})` : undefined,
+      songs: type === "song" ? userFavorites.songs.filter(t => t !== token) : undefined,
+      albums: type === "album" ? userFavorites.albums.filter(t => t !== token) : undefined,
+      playlists: type === "playlist" ? userFavorites.playlists.filter(t => t !== token) : undefined,
+      artists: type === "artist" ? userFavorites.artists.filter(t => t !== token) : undefined,
+      podcasts: type === "show" ? userFavorites.podcasts.filter(t => t !== token) : undefined,
     })
-    .where(eq(favorites.userId, userId))
+    .where(eq(favorites.userId, Number(userId)))
     .returning();
 
   if (!updatedfavorites) {

@@ -34,14 +34,14 @@ export const {
       await db
         .update(users)
         .set({ emailVerified: new Date() })
-        .where(eq(users.id, user.id!));
+        .where(eq(users.id, Number(user.id!)));
     },
   },
 
   callbacks: {
     jwt: async ({ token }) => {
       const user = await db.query.users.findFirst({
-        where: (u, { eq }) => eq(u.id, token.sub!),
+        where: (u, { eq }) => eq(u.id, Number(token.sub!)),
       });
 
       if (user) {
@@ -49,7 +49,7 @@ export const {
 
         token = {
           ...token,
-          id,
+          id: id.toString(),
           name,
           email,
           username,

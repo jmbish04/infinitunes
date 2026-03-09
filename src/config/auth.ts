@@ -37,7 +37,7 @@ export const authConfig: NextAuthConfig = {
             const isValid = await compare(user.password, dbUser.password);
 
             if (isValid) {
-              return dbUser;
+              return { ...dbUser, id: String(dbUser.id) };
             }
           }
         }

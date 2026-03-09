@@ -80,13 +80,13 @@ export async function createNewPlaylist(
   const [{ playlistsCount }] = await db
     .select({ playlistsCount: count() })
     .from(myPlaylists)
-    .where(eq(myPlaylists.userId, data.userId));
+    .where(eq(myPlaylists.userId, Number(data.userId)));
 
   if (playlistsCount >= 10) {
     throw new Error("You can only have 10 playlists, please delete one");
   }
 
-  const [playlist] = await db.insert(myPlaylists).values(data).returning();
+  const [playlist] = await db.insert(myPlaylists).values({ ...data, userId: Number(data.userId) }).returning();
 
   if (!playlist) {
     throw new Error("Failed to create playlist, please try again");
@@ -122,7 +122,7 @@ export async function updateUser(user: NewUser) {
 export async function deleteUser(userId: string) {
   const [deletedUser] = await db
     .delete(users)
-    .where(eq(users.id, userId))
+    .where(eq(users.id, Number(userId)))
     .returning();
 
   if (!deletedUser) {

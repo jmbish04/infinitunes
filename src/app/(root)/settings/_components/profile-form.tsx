@@ -83,7 +83,7 @@ export function ProfileForm({ user }: ProfileFormProps) {
   async function onSubmit(formData: FormData) {
     setIsSubmitting(true);
 
-    toast.promise(updateUser({ id: user.id!, ...formData }), {
+    toast.promise(updateUser({ id: Number(user.id!), ...formData }), {
       loading: "Updating Profile...",
       success: "Profile Updated!",
       error: (e) => e.message,

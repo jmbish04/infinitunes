@@ -46,7 +46,7 @@ export function AddToPlaylistDialog(props: AddToPlaylistDialogProps) {
                 <Button
                   key={id}
                   variant="outline"
-                  onClick={() => addToPlaylist(id, name)}
+                  onClick={() => addToPlaylist(String(id), name)}
                   className="h-14 justify-normal gap-2 px-1 text-start"
                 >
                   {/* TODO: add image collage */}

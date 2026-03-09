@@ -54,10 +54,10 @@ export function NewPlaylistForm({ user, children }: NewPlaylistFormProps) {
   async function onSubmit({ name, description }: FormData) {
     try {
       toast.promise(
-        createNewPlaylist({ name, description, userId: user!.id! }),
+        createNewPlaylist({ name, description, userId: String(user!.id!) }),
         {
           loading: "Creating playlist...",
-          success: (d) => `Playlist "${d.name}" created successfully!`,
+          success: (d) => `Playlist "${d?.name}" created successfully!`,
           error: (e) => e.message,
           finally: () => setOpen(false),
         }

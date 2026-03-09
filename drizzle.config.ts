@@ -15,7 +15,7 @@ if (!process.env.DATABASE_URL) {
 export default {
   schema: "./src/lib/db/schema.ts",
   out: "./src/lib/db/migrations",
-  dialect: "postgresql",
+  dialect: "sqlite",
   verbose: true,
   dbCredentials: { url: process.env.DATABASE_URL },
   tablesFilter: [`${siteConfig.name.toLowerCase().replace(/\s/g, "_")}_*`],
