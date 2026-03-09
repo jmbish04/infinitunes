@@ -18,6 +18,8 @@ import {
 } from "@/lib/db/schema";
 
 // Initialize Hono OpenAPI
+import type { Env } from "../../env.d.ts";
+
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
 // GET /jobs
@@ -247,7 +249,6 @@ app.get(
 );
 
 // Astro APIRoute handler
-// @ts-expect-error Types don't align for locals
 export const ALL: APIRoute = ({ request, locals }) => {
   // @ts-expect-error Types don't align for env
   return app.fetch(request, { DB: locals.runtime.env.DB });

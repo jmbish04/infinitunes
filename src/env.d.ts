@@ -8,6 +8,6 @@ declare namespace App {
   interface Locals extends Runtime {}
 }
 
-interface Env {
+export interface Env {
   DB: D1Database;
 }
