@@ -1,4 +1,4 @@
-import { createEnv } from "@t3-oss/env-nextjs";
+const createEnv = (opts: any) => opts.server || {};
 import { z } from "zod";
 
 export const env = createEnv({

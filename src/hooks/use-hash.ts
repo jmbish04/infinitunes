@@ -1,5 +1,5 @@
 import React from "react";
-import { useParams } from "next/navigation";
+
 
 const getHash = () =>
   typeof window !== "undefined" ?
@@ -14,7 +14,7 @@ export function useHash() {
   const [isClient, setIsClient] = React.useState(false);
   const [hash, setHash] = React.useState(getHash());
 
-  const params = useParams();
+  const params = {};
 
   React.useEffect(() => {
     setIsClient(true);

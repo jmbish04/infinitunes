@@ -1,7 +1,13 @@
-import type { MyPlaylist } from "@/lib/db/schema";
+
+// Dummy types for removed schema tables
+type MyPlaylist = any;
+type Favorite = any;
+type NewUser = any;
+
+import type { } from "@/lib/db/schema";
 
 type UsersPlaylistsProps = {
-  playlists: MyPlaylist[];
+  playlists: [];
 };
 
 export function UsersPlaylists({ playlists }: UsersPlaylistsProps) {

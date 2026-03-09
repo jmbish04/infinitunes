@@ -1,9 +1,8 @@
 "use client";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "next-themes";
-import { type ThemeProviderProps } from "next-themes/dist/types";
+type ThemeProviderProps = any;
 
 import { Toaster } from "./ui/sonner";
 import { TooltipProvider } from "./ui/tooltip";
@@ -25,11 +24,9 @@ export default function Providers({ children, theme }: Props) {
       enableSystem
       {...theme}
     >
-      <SessionProvider>
-        <QueryClientProvider client={queryClient}>
+              <QueryClientProvider client={queryClient}>
           <TooltipProvider>{children}</TooltipProvider>
         </QueryClientProvider>
-      </SessionProvider>
 
       <Toaster />
     </ThemeProvider>

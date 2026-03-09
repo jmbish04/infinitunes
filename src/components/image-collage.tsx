@@ -1,4 +1,4 @@
-import Image from "next/image";
+
 
 import { cn } from "@/lib/utils";
 
@@ -12,10 +12,8 @@ export function ImageCollage({ src }: { src: string[] }) {
     >
       {src.map((image, i) => (
         <div key={i} className="relative h-full overflow-hidden rounded-md">
-          <Image
+          <img
             src={image}
-            fill
-            alt="Song cover"
             className={cn(
               src.length === 1 &&
                 src[0].includes("placeholder") &&

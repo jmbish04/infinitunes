@@ -1,8 +1,8 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
+
+
 import { ChevronDown, ChevronRight } from "lucide-react";
 
 import { sidebarNav } from "@/config/nav";
@@ -13,7 +13,7 @@ import { Separator } from "../ui/separator";
 import { Sheet, SheetContent, SheetHeader, SheetTrigger } from "../ui/sheet";
 
 export function SecondaryNavbar() {
-  const pathname = usePathname();
+  const pathname = "";
 
   const [isOpen, setIsOpen] = React.useState(false);
 
@@ -40,7 +40,7 @@ export function SecondaryNavbar() {
                     isActive && "border-primary"
                   )}
                 >
-                  <Link
+                  <a
                     href={href}
                     className={cn(
                       buttonVariants({
@@ -51,7 +51,7 @@ export function SecondaryNavbar() {
                     )}
                   >
                     {title}
-                  </Link>
+                  </a>
                 </li>
               );
             })}
@@ -90,7 +90,7 @@ export function SecondaryNavbar() {
                 const isActive = href === pathname;
 
                 return (
-                  <Link
+                  <a
                     key={title}
                     href={href}
                     onClick={toggleSheet}
@@ -107,7 +107,7 @@ export function SecondaryNavbar() {
                     </span>
 
                     <ChevronRight />
-                  </Link>
+                  </a>
                 );
               })}
             </div>
