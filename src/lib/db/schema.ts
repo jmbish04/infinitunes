@@ -2,6 +2,81 @@ import { sql } from "drizzle-orm";
 import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { createInsertSchema, createSelectSchema } from "drizzle-zod";
 
+import type { AdapterAccount } from "next-auth/adapters";
+
+/* -----------------------------------------------------------------------------------------------
+ * Auth tables
+ * NOTE: auth tables are common to mutiple projects, remember to remove `table filters` before
+ * performing any operations
+ * -----------------------------------------------------------------------------------------------*/
+
+export const users = sqliteTable("user", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name"),
+  email: text("email").notNull().unique(),
+  username: text("username").unique(),
+  password: text("password"),
+  emailVerified: integer("emailVerified", { mode: "timestamp" }),
+  image: text("image"),
+});
+
+export const accounts = sqliteTable(
+  "account",
+  {
+    userId: text("userId")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    type: text("type").$type<AdapterAccount["type"]>().notNull(),
+    provider: text("provider").notNull(),
+    providerAccountId: text("providerAccountId").notNull(),
+    refresh_token: text("refresh_token"),
+    access_token: text("access_token"),
+    expires_at: integer("expires_at"),
+    token_type: text("token_type"),
+    scope: text("scope"),
+    id_token: text("id_token"),
+    session_state: text("session_state"),
+  }
+);
+
+export const verificationTokens = sqliteTable(
+  "verificationToken",
+  {
+    identifier: text("identifier").notNull(),
+    token: text("token").notNull(),
+    expires: integer("expires", { mode: "timestamp" }).notNull(),
+  }
+);
+
+/* -----------------------------------------------------------------------------------------------
+ * App tables
+ * -----------------------------------------------------------------------------------------------*/
+
+export const myPlaylists = sqliteTable("playlist", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  name: text("name").notNull(),
+  description: text("description"),
+  userId: text("userId")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  songs: text("songs", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  createdAt: integer("createdAt", { mode: "timestamp" })
+    .default(sql`(strftime('%s', 'now'))`)
+    .notNull(),
+});
+
+export const favorites = sqliteTable("favorite", {
+  id: text("id").primaryKey().$defaultFn(() => crypto.randomUUID()),
+  userId: text("userId")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  songs: text("songs", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  albums: text("albums", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  playlists: text("playlists", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  artists: text("artists", { mode: "json" }).$type<string[]>().default([]).notNull(),
+  podcasts: text("podcasts", { mode: "json" }).$type<string[]>().default([]).notNull(),
+});
+
 // Define the target roles you are applying to
 export const jobs = sqliteTable("jobs", {
   id: text("id")
@@ -36,9 +111,8 @@ export const episodes = sqliteTable("episodes", {
   jobId: text("job_id")
     .references(() => jobs.id, { onDelete: "cascade" })
     .notNull(),
-  resumeId: text("resume_id").references(() => resumes.id, {
-    onDelete: "set null",
-  }),
+  resumeId: text("resume_id")
+    .references(() => resumes.id, { onDelete: "set null" }),
   title: text("title").notNull(), // e.g., "Hiring Committee: OpenAI - UI Engineer"
   audioStorageKey: text("audio_storage_key"), // The exact Cloudflare R2 object key
   transcript: text("transcript"), // The raw text transcript of the podcast
@@ -59,3 +133,16 @@ export const selectResumeSchema = createSelectSchema(resumes);
 
 export const insertEpisodeSchema = createInsertSchema(episodes);
 export const selectEpisodeSchema = createSelectSchema(episodes);
+
+/* -----------------------------------------------------------------------------------------------
+ * Types
+ * -----------------------------------------------------------------------------------------------*/
+
+export type User = typeof users.$inferSelect;
+export type NewUser = typeof users.$inferInsert;
+
+export type MyPlaylist = typeof myPlaylists.$inferSelect;
+export type NewPlaylist = typeof myPlaylists.$inferInsert;
+
+export type Favorite = typeof favorites.$inferSelect;
+export type NewFavorite = typeof favorites.$inferInsert;
