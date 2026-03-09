@@ -1,0 +1,73 @@
+---
+import { ViewTransitions } from 'astro:transitions';
+import { TailwindIndicator } from "@/components/tailwind-indicator";
+import Providers from "@/components/provider";
+import { siteConfig } from "@/config/site";
+import { Player } from "@/components/player";
+import { Sidebar } from "@/components/sidebar";
+import { SiteFooter } from "@/components/site-footer/footer";
+import { Navbar } from "@/components/site-header/navbar";
+import { SecondaryNavbar } from "@/components/site-header/secondary-navbar";
+import { getUser } from "@/lib/auth";
+import { getUserPlaylists } from "@/lib/db/queries";
+import "@/styles/globals.css";
+
+const user = await getUser();
+let userPlaylists = [];
+
+if (user) {
+  userPlaylists = await getUserPlaylists(user.id);
+}
+
+// Extract theming config securely from cookies
+const cookieString = Astro.request.headers.get('cookie') || '';
+const themeConfigMatch = cookieString.match(/theme-config=([^;]+)/);
+let theme = "zinc";
+let radius = "default";
+
+if (themeConfigMatch) {
+  try {
+    const config = JSON.parse(decodeURIComponent(themeConfigMatch[1]));
+    theme = config.theme || "zinc";
+    radius = config.radius || "default";
+  } catch (e) {
+    console.error("Failed to parse theme cookie", e);
+  }
+}
+
+const title = siteConfig.name;
+const description = siteConfig.description;
+const radiusStyle = radius === "default" ? "" : `--radius: ${radius}rem`;
+---
+
+<html lang="en" suppressHydrationWarning>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, user-scalable=yes" />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon-16x16.png" type="image/png" sizes="16x16" />
+    <link rel="icon" href="/favicon-32x32.png" type="image/png" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-icon.png" type="image/png" />
+    <ViewTransitions />
+  </head>
+  <body class={`min-h-screen font-sans antialiased theme-${theme}`} style={radiusStyle}>
+    <Providers client:load>
+      <Navbar client:load />
+      <Sidebar user={user} userPlaylists={userPlaylists} client:load />
+
+      <main class="p-2 pb-24 sm:p-4 sm:pb-24 lg:ml-[20%] lg:pb-10 xl:ml-[15%] 2xl:ml-[12.5%]">
+        <SecondaryNavbar client:load />
+        <slot />
+        <SiteFooter client:visible />
+      </main>
+
+      <div transition:persist="audio-player">
+        <Player user={user} playlists={userPlaylists} client:load />
+      </div>
+    </Providers>
+
+    <TailwindIndicator client:idle />
+  </body>
+</html>
