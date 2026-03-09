@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 import { useEffect, useRef } from "react";
 
 import type { RefObject } from "react";
@@ -60,7 +59,6 @@ function useEventListener<
   // Create a ref that stores handler
   const savedHandler = useRef(handler);
 
-  // eslint-disable-next-line react-compiler/react-compiler
   useIsomorphicLayoutEffect(() => {
     savedHandler.current = handler;
   }, [handler]);
