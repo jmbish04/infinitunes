@@ -12,10 +12,11 @@
     "fmt": "prettier --write \"**/*.{ts,tsx,mdx,json,astro}\" --cache",
     "fmt:check": "prettier --check \"**/*.{ts,tsx,mdx,json,astro}\" --cache",
     "db:generate": "drizzle-kit generate",
-    "db:migrate": "wrangler d1 migrations apply infinitunes-db --local",
-    "db:migrate:prod": "wrangler d1 migrations apply infinitunes-db --remote",
+    "db:migrate:local": "npm run db:generate && wrangler d1 migrations apply infinitunes-db --local",
+    "db:migrate:remote": "npm run db:generate && wrangler d1 migrations apply infinitunes-db --remote",
     "db:drop": "drizzle-kit drop",
     "db:studio": "drizzle-kit studio",
+    "deploy": "npm run build && npm run db:migrate:remote && npx wrangler deploy",
     "ui": "bunx shadcn@latest"
   },
   "dependencies": {
