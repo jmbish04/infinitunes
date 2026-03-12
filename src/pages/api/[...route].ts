@@ -1,13 +1,6 @@
-
-// Dummy types for removed schema tables
-type MyPlaylist = any;
-type Favorite = any;
-type NewUser = any;
-
 import { swaggerUI } from "@hono/swagger-ui";
 import { createRoute, OpenAPIHono, z } from "@hono/zod-openapi";
 import { apiReference } from "@scalar/hono-api-reference";
-import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 
 import type { APIRoute } from "astro";
@@ -25,6 +18,8 @@ import {
 } from "@/lib/db/schema";
 
 // Initialize Hono OpenAPI
+import type { Env } from "../../env.d.ts";
+
 const app = new OpenAPIHono<{ Bindings: Env }>();
 
 // GET /jobs
@@ -37,7 +32,7 @@ app.openapi(
       200: {
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: z.array(selectJobSchema),
           },
         },
         description: "Retrieve a list of jobs",
@@ -70,7 +65,7 @@ app.openapi(
       201: {
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: selectJobSchema,
           },
         },
         description: "Create a new job",
@@ -95,7 +90,7 @@ app.openapi(
       200: {
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: z.array(selectResumeSchema),
           },
         },
         description: "Retrieve a list of resumes",
@@ -128,7 +123,7 @@ app.openapi(
       201: {
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: selectResumeSchema,
           },
         },
         description: "Create a new resume",
@@ -144,6 +139,7 @@ app.openapi(
 );
 
 // GET /episodes
+// @ts-expect-error ts(2589) Type instantiation is excessively deep and possibly infinite.
 app.openapi(
   createRoute({
     method: "get",
@@ -153,7 +149,7 @@ app.openapi(
       200: {
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: z.array(selectEpisodeSchema),
           },
         },
         description: "Retrieve a list of episodes",
@@ -186,7 +182,7 @@ app.openapi(
       201: {
         content: {
           "application/json": {
-            schema: z.any(),
+            schema: selectEpisodeSchema,
           },
         },
         description: "Create a new episode",
@@ -254,7 +250,6 @@ app.get(
 
 // Astro APIRoute handler
 export const ALL: APIRoute = ({ request, locals }) => {
-  return (app as any).fetch(request, { DB: locals.runtime.env.DB });
+  // @ts-expect-error Types don't align for env
+  return app.fetch(request, { DB: locals.runtime.env.DB });
 };
-
-export type AppType = any;
