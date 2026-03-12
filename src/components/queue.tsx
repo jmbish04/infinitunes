@@ -1,7 +1,7 @@
 "use client";
 
-import Image from "next/image";
-import Link from "next/link";
+
+
 import { ListOrdered, X } from "lucide-react";
 import { toast } from "sonner";
 
@@ -82,10 +82,9 @@ export function Queue() {
                 <div className="group flex h-14 w-full cursor-pointer items-center justify-between truncate rounded-md border px-2 text-sm transition-shadow duration-150 hover:shadow-md">
                   <figure className="flex w-full items-center gap-4 overflow-hidden">
                     <div className="relative aspect-square h-10 min-w-fit overflow-hidden rounded">
-                      <Image
+                      <img
                         src={getImageSrc(item.image, "low")}
                         alt={item.name}
-                        fill
                         className="z-10 object-cover duration-300 group-hover:brightness-50"
                       />
 
@@ -100,7 +99,7 @@ export function Queue() {
 
                     <figcaption className="flex flex-col">
                       <h4 className="w-full truncate font-semibold">
-                        <Link
+                        <a
                           href={getHref(
                             item.url,
                             item.type === "song" ? "song" : "episode"
@@ -108,19 +107,19 @@ export function Queue() {
                           className="text-primary group-hover:text-primary lg:text-muted-foreground"
                         >
                           {item.name}
-                        </Link>
+                        </a>
                       </h4>
 
                       <ScrollArea className="w-full max-w-[400px] pb-1">
                         {item.artists.map((artist, i, arr) => (
-                          <Link
+                          <a
                             key={artist.id}
                             href={getHref(artist.url, "artist")}
                             className="w-full truncate hover:text-foreground"
                           >
                             {artist.name}
                             {i !== arr.length - 1 && ", "}
-                          </Link>
+                          </a>
                         ))}
 
                         <ScrollBar orientation="horizontal" className="h-1.5" />

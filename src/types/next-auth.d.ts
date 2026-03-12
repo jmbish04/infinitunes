@@ -1,6 +1,5 @@
-import { type DefaultSession } from "next-auth";
 
-import type { JWT } from "next-auth/jwt"; // eslint-disable-line @typescript-eslint/no-unused-vars
+
 
 /**
  * Module augmentation for `next-auth` types. Allows us to add custom properties to the `session`
@@ -25,7 +24,7 @@ declare module "next-auth" {
   }
 }
 
-declare module "next-auth/jwt" {
+declare module "@auth/core/jwt" {
   interface JWT {
     id: string;
     email: string;

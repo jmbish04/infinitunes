@@ -1,5 +1,5 @@
 import React from "react";
-import { usePathname } from "next/navigation";
+
 import { Clipboard, Facebook, Mail, Twitter } from "lucide-react";
 
 import { siteConfig } from "@/config/site";
@@ -50,7 +50,7 @@ const shareOptions: ShareOption[] = [
 ];
 
 export function ShareOptions({ isDropDownItem, ...props }: ShareOptionsProps) {
-  const pathname = usePathname();
+  const pathname = "";
 
   const [isCopied, setIsCopied] = React.useState(false);
 

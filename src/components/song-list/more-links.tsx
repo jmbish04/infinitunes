@@ -1,5 +1,5 @@
 import React from "react";
-import Link from "next/link";
+
 import { Disc, Mic2, Music } from "lucide-react";
 
 import type { ArtistMini } from "@/types";
@@ -23,47 +23,47 @@ export function TileMoreLinks(props: TileMoreLinksProps) {
   return (
     <>
       <Wrapper isDropdownItem={isDropdownItem}>
-        <Link
+        <a
           href={getHref(itemUrl, type === "song" ? "song" : "show")}
           className="cursor-pointer py-1"
         >
           <Music className="mr-2 inline-block size-5" />
           {type === "song" ? "Song Details & Lyrics" : "View Episode Details"}
-        </Link>
+        </a>
       </Wrapper>
 
       {showAlbum && albumUrl && (
         <Wrapper isDropdownItem={isDropdownItem}>
-          <Link
+          <a
             href={getHref(albumUrl, "album")}
             className="cursor-pointer py-1"
           >
             <Disc className="mr-2 inline-block size-5" />
             More from Album
-          </Link>
+          </a>
         </Wrapper>
       )}
 
       <Wrapper isDropdownItem={isDropdownItem}>
-        <Link
+        <a
           href={getHref(itemUrl, type === "song" ? "song" : "show")}
           className="cursor-pointer py-1"
         >
           <Music className="mr-2 inline-block size-5" />
           {type === "song" ? "Song Details & Lyrics" : "View Episode Details"}
-        </Link>
+        </a>
       </Wrapper>
 
       {primaryArtists?.map(({ id, url, name }) => (
         <Wrapper key={id} isDropdownItem={isDropdownItem}>
-          <Link
+          <a
             key={id}
             href={getHref(url, "artist")}
             className="cursor-pointer py-1"
           >
             <Mic2 className="mr-2 inline-block size-5" />
             More From {name}
-          </Link>
+          </a>
         </Wrapper>
       ))}
     </>
