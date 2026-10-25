@@ -1,3 +1,7 @@
+# ------------------------------------------------------------
+# Module providing functionality for jules-merge-conflicts.yml
+# ------------------------------------------------------------
+
 name: PR Code Block Merger
 
 on:

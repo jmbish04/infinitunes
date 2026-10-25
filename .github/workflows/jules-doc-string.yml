@@ -1,3 +1,7 @@
+# ------------------------------------------------------------
+# Module providing functionality for jules-doc-string.yml
+# ------------------------------------------------------------
+
 name: PR Docstring Generator
 
 on:
